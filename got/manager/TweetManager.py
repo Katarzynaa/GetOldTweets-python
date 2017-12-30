@@ -34,8 +34,8 @@ class TweetManager:
 			for tweetHTML in tweets:
 				tweetPQ = PyQuery(tweetHTML)
 				tweet = models.Tweet()
-				
 				usernameTweet = tweetPQ("span:first.username.u-dir b").text();
+				useridTweet = tweetPQ.attr("data-user-id")
 				txt = re.sub(r"\s+", " ", tweetPQ("p.js-tweet-text").text().replace('# ', '#').replace('@ ', '@'));
 				retweets = int(tweetPQ("span.ProfileTweet-action--retweet span.ProfileTweet-actionCount").attr("data-tweet-stat-count").replace(",", ""));
 				favorites = int(tweetPQ("span.ProfileTweet-action--favorite span.ProfileTweet-actionCount").attr("data-tweet-stat-count").replace(",", ""));
@@ -51,12 +51,13 @@ class TweetManager:
 				tweet.id = id
 				tweet.permalink = 'https://twitter.com' + permalink
 				tweet.username = usernameTweet
+				tweet.userid=useridTweet
 				tweet.text = txt
 				tweet.date = datetime.datetime.fromtimestamp(dateSec)
 				tweet.retweets = retweets
 				tweet.favorites = favorites
-				tweet.mentions = " ".join(re.compile('(@\\w*)').findall(tweet.text))
-				tweet.hashtags = " ".join(re.compile('(#\\w*)').findall(tweet.text))
+				tweet.mentions = " ".join(re.compile('(@\\S*)').findall(tweet.text))
+				tweet.hashtags = " ".join(re.compile('(#\\S*)').findall(tweet.text))
 				tweet.geo = geo
 				
 				results.append(tweet)
@@ -101,6 +102,9 @@ class TweetManager:
 		if hasattr(tweetCriteria, 'topTweets'):
 			if tweetCriteria.topTweets:
 				url = "https://twitter.com/i/search/timeline?q=%s&src=typd&max_position=%s"
+
+		if hasattr(tweetCriteria, 'language'):
+			urlGetData += ' lang:' + tweetCriteria.language
 		
 		
 		

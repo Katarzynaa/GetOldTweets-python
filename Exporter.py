@@ -19,7 +19,7 @@ def main(argv):
 		return
 
 	try:
-		opts, args = getopt.getopt(argv, "", ("username=", "near=", "within=", "since=", "until=", "querysearch=", "toptweets", "maxtweets=", "output="))
+		opts, args = getopt.getopt(argv, "", ("username=", "near=", "within=", "since=", "until=", "querysearch=", "toptweets", "maxtweets=", "output=", "lang="))
 
 		tweetCriteria = got.manager.TweetCriteria()
 		outputFileName = "output_got.csv"
@@ -30,6 +30,9 @@ def main(argv):
 
 			elif opt == '--since':
 				tweetCriteria.since = arg
+
+			elif opt == '--lang':
+				tweetCriteria.language = arg
 
 			elif opt == '--until':
 				tweetCriteria.until = arg
@@ -57,13 +60,13 @@ def main(argv):
 				
 		outputFile = codecs.open(outputFileName, "w+", "utf-8")
 
-		outputFile.write('username;date;retweets;favorites;text;geo;mentions;hashtags;id;permalink')
+		outputFile.write('username;userid;date;retweets;favorites;text;geo;mentions;hashtags;id;permalink')
 
 		print('Searching...\n')
 
 		def receiveBuffer(tweets):
 			for t in tweets:
-				outputFile.write(('\n%s;%s;%d;%d;"%s";%s;%s;%s;"%s";%s' % (t.username, t.date.strftime("%Y-%m-%d %H:%M"), t.retweets, t.favorites, t.text, t.geo, t.mentions, t.hashtags, t.id, t.permalink)))
+				outputFile.write(('\n%s;%s;%s;%d;%d;"%s";%s;%s;%s;"%s";%s' % (t.username, t.userid, t.date.strftime("%Y-%m-%d %H:%M"), t.retweets, t.favorites, t.text, t.geo, t.mentions, t.hashtags, t.id, t.permalink)))
 			outputFile.flush();
 			print('More %d saved on file...\n' % len(tweets))
 
